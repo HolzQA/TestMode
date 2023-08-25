@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility ="11"	//работаем с Java 11
+
+compileJava.options.encoding="UTF-8"	   	//поддержка UTF-8
+compileTestJava.options.encoding="UTF-8"	//поддержка UTF-8
+
+group 'ru.netology'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+    testImplementation 'com.codeborne:selenide:6.17.1'
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
+
+    testImplementation 'io.rest-assured:rest-assured:5.3.1'
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.28'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+}
+
+test {
+    useJUnitPlatform()
+}
