@@ -15,4 +15,4 @@ install:
 
 build_script:
 # запускаем тест, флаг --info позволяет выводить больше информации. Флаг -Dselenide.headless=true запускает тесты в фоновом режиме
-  - ./gradlew test --info  
+  - ./gradlew test --info  -Dselenide.headless=true
