@@ -47,15 +47,16 @@ public final class DataGenerator {
     public static class Registration {
         private Registration() {}
 
-        public static RegistrationDto getUser(String status) {
-            return new RegistrationDto(generateLogin(), generatePassword(), status);
+        public static RegistrationDto getUser(String login, String status) {
+            return new RegistrationDto(login, generatePassword(), status);
         }
 
-        public static RegistrationDto getRegisteredUser(String status) {
-            RegistrationDto newUser = getUser(status);
+        public static RegistrationDto getRegisteredUser(String login, String status) {
+            RegistrationDto newUser = getUser(login, status);
             UserRegistration(newUser);
             return newUser;
         }
+
     }
 
     @Value

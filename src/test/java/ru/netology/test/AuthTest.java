@@ -3,14 +3,11 @@ package ru.netology.test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.netology.data.DataGenerator;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
-import static io.restassured.RestAssured.given;
 import static ru.netology.data.DataGenerator.Registration.*;
 import static ru.netology.data.DataGenerator.*;
-//import static ru.netology.data.DataGenerator.requestSpec;
 
 public class AuthTest {
 
@@ -23,7 +20,7 @@ public class AuthTest {
     @DisplayName("Should successfully login with registered user")
     void shouldLoginWithAccount() {
 
-        var user = getRegisteredUser("active");
+        var user = getRegisteredUser(generateLogin(),"active");
 
         $("[data-test-id='login'] input").sendKeys(user.getLogin());
         $("[data-test-id='password'] input").sendKeys(user.getPassword());
@@ -35,23 +32,17 @@ public class AuthTest {
     @DisplayName("Should rewrite userdata with the same login")
     void shouldRewriteWithTheSameLogin() {
 
-        var user = getRegisteredUser("active");
-        String newPassword = generatePassword();
+        var user = getRegisteredUser(generateLogin(), "active");
+        String oldPassword = user.getPassword();
 
-        given()
-                .spec(requestSpec)
-                .body(new DataGenerator.RegistrationDto(user.getLogin(), newPassword, "active"))
-                .when()
-                .post("/api/system/users")
-                .then()
-                .statusCode(200);
+        var newUser = getRegisteredUser(user.getLogin(), "active");
 
         $("[data-test-id='login'] input").sendKeys(user.getLogin());
-        $("[data-test-id='password'] input").sendKeys(user.getPassword());
+        $("[data-test-id='password'] input").sendKeys(oldPassword);
         $("[data-test-id='action-login']").click();
         $("[data-test-id='error-notification']  [class='notification__content']").shouldHave(text("Неверно указан логин или пароль"));
 
-        $("[data-test-id='password'] input").doubleClick().sendKeys(newPassword);
+        $("[data-test-id='password'] input").doubleClick().sendKeys(newUser.getPassword());
         $("[data-test-id='action-login']").click();
         $x("//*[contains(text(), 'Личный кабинет')]").shouldBe(visible);
     }
@@ -60,7 +51,7 @@ public class AuthTest {
     @DisplayName("Should get error when login with not registered user")
     void shouldNotLoginWithAccountBecauseNotReg() {
 
-        var user = getUser("active");
+        var user = getUser(generateLogin(), "active");
 
         $("[data-test-id='login'] input").sendKeys(user.getLogin());
         $("[data-test-id='password'] input").sendKeys(user.getPassword());
@@ -72,7 +63,7 @@ public class AuthTest {
     @DisplayName("Should get error when login blocked user")
     void shouldNotLoginWithAccountBecauseBlocked() {
 
-        var user = getRegisteredUser("blocked");
+        var user = getRegisteredUser(generateLogin(), "blocked");
 
         $("[data-test-id='login'] input").sendKeys(user.getLogin());
         $("[data-test-id='password'] input").sendKeys(user.getPassword());
@@ -84,9 +75,9 @@ public class AuthTest {
     @DisplayName("Should get error when login with incorrect login")
     void shouldNotLoginWithAccountBecauseIncorrectLogin() {
 
-        var user = getRegisteredUser("active");
+        var user = getRegisteredUser(generateLogin(), "active");
 
-        $("[data-test-id='login'] input").sendKeys(user.getLogin() + "m");
+        $("[data-test-id='login'] input").sendKeys(generateLogin());
         $("[data-test-id='password'] input").sendKeys(user.getPassword());
         $("[data-test-id='action-login']").click();
         $("[data-test-id='error-notification']  [class='notification__content']").shouldHave(text("Неверно указан логин или пароль"));
@@ -96,10 +87,10 @@ public class AuthTest {
     @DisplayName("Should get error when login with incorrect password")
     void shouldNotLoginWithAccountBecauseIncorrectPassword() {
 
-        var user = getRegisteredUser("active");
+        var user = getRegisteredUser(generateLogin(), "active");
 
         $("[data-test-id='login'] input").sendKeys(user.getLogin());
-        $("[data-test-id='password'] input").sendKeys(user.getPassword() + "m");
+        $("[data-test-id='password'] input").sendKeys(generatePassword());
         $("[data-test-id='action-login']").click();
         $("[data-test-id='error-notification']  [class='notification__content']").shouldHave(text("Неверно указан логин или пароль"));
     }
